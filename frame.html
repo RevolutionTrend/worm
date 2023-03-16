@@ -4,6 +4,38 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<style>
+			#cover {
+				width: 100vw;
+				height: 100vh;
+				position: fixed;
+				left: 0;
+				top: 0;
+				background-color: rgba(128, 128, 128, 0.3);
+				display: none;
+			}
+
+			#cover > div {
+				width: 200px;
+				height: 200px;
+				margin: auto;
+				background-image: url(./images/loading.svg);
+				background-size: 120px 120px;
+				background-position: center center;
+				background-repeat: no-repeat;
+				animation: roll 1.5s linear 0s infinite normal;
+			}
+
+			@keyframes roll {
+				from {
+					transform: rotate(0deg);
+				}
+
+				to {
+					transform: rotate(360deg);
+				}
+			}
+		</style>
 		<title>Document</title>
 	</head>
 
@@ -14,6 +46,9 @@
 			value="https://stillhiring.today/?ref=producthunt"
 		/>
 		<button onclick="getExcel()">获取Excel</button>
+		<div id="cover">
+			<div></div>
+		</div>
 
 		<script>
 			let options = {
@@ -40,7 +75,17 @@
 					.catch((error) => console.error(error));
 			};
 
+			const downloadFile = (url) => {
+				const link = document.createElement('a');
+				link.href = url;
+				document.body.appendChild(link);
+				link.click();
+				link.remove();
+				document.getElementById('cover').style.display = 'none';
+			};
+
 			function getExcel() {
+				document.getElementById('cover').style.display = 'grid';
 				let o = Object.assign({}, options, {
 					body: JSON.stringify({
 						url: document.getElementById('rel_url').value,
@@ -50,7 +95,10 @@
 					.then((res) => res.json())
 					.then((data) => {
 						if (data && data.url) {
-							console.log(data.url);
+							downloadFile(data.url);
+						} else {
+							document.getElementById('cover').style.display =
+								'none';
 						}
 					})
 					.catch((error) => console.error(error));
