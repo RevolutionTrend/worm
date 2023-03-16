@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+
+	<body>
+		<input
+			type="text"
+			id="rel_url"
+			value="https://stillhiring.today/?ref=producthunt"
+		/>
+		<button onclick="getExcel()">获取Excel</button>
+
+		<script>
+			let options = {
+				cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+				credentials: 'same-origin', // include, same-origin, *omit
+				headers: {
+					'content-type': 'application/json',
+				},
+				method: 'post', // *GET, POST, PUT, DELETE, etc.
+				mode: 'cors', // no-cors, cors, *same-origin
+				redirect: 'follow', // manual, *follow, error
+				referrer: 'no-referrer', // *client, no-referrer
+			};
+
+			const getRealData = (url) => {
+				let o = Object.assign({}, options, {
+					body: JSON.stringify({ url }),
+				});
+				fetch('/api/getFile', o)
+					.then((res) => res.json())
+					.then((data) => {
+						console.log(data);
+					})
+					.catch((error) => console.error(error));
+			};
+
+			function getExcel() {
+				let o = Object.assign({}, options, {
+					body: JSON.stringify({
+						url: document.getElementById('rel_url').value,
+					}),
+				});
+				fetch('/api/sendurl', o)
+					.then((res) => res.json())
+					.then((data) => {
+						if (data && data.url) {
+							console.log(data.url);
+						}
+					})
+					.catch((error) => console.error(error));
+			}
+		</script>
+	</body>
+</html>
