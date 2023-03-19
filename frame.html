@@ -35,17 +35,57 @@
 					transform: rotate(360deg);
 				}
 			}
+
+			.row {
+				width: 100%;
+				height: 32px;
+				margin-bottom: 10px;
+			}
+
+			.left {
+				width: 120px;
+				height: 24px;
+				line-height: 24px;
+				float: left;
+				display: block;
+			}
+
+			.right {
+				width: 500px;
+				height: 24px;
+				float: left;
+			}
+
+			.btn {
+				width: 120px;
+				height: 32px;
+			}
 		</style>
 		<title>Document</title>
 	</head>
 
 	<body>
-		<input
-			type="text"
-			id="rel_url"
-			value="https://stillhiring.today/?ref=producthunt"
-		/>
-		<button onclick="getExcel()">获取Excel</button>
+		<div class="row">
+			<span class="left">URL:</span>
+			<input
+				type="text"
+				id="rel_url"
+				value="https://stillhiring.today/?ref=producthunt"
+				class="right"
+				readonly
+			/>
+		</div>
+		<div class="row">
+			<span class="left">Key Words:</span>
+			<input
+				type="text"
+				id="rel_key"
+				value="readSharedViewData"
+				class="right"
+				readonly
+			/>
+		</div>
+		<button onclick="getExcel()" class="btn">获取Excel</button>
 		<div id="cover">
 			<div></div>
 		</div>
@@ -75,9 +115,9 @@
 					.catch((error) => console.error(error));
 			};
 
-			const downloadFile = (url) => {
+			const downloadFile = () => {
 				const link = document.createElement('a');
-				link.href = url;
+				link.href = '/api/downloadFile';
 				document.body.appendChild(link);
 				link.click();
 				link.remove();
@@ -86,16 +126,24 @@
 
 			function getExcel() {
 				document.getElementById('cover').style.display = 'grid';
+				const url = document.getElementById('rel_url').value;
+				const word = document.getElementById('rel_key').value;
+				if (!url || !word) {
+					return;
+				}
 				let o = Object.assign({}, options, {
 					body: JSON.stringify({
-						url: document.getElementById('rel_url').value,
+						url,
+						word,
 					}),
 				});
 				fetch('/api/sendurl', o)
 					.then((res) => res.json())
 					.then((data) => {
 						if (data && data.url) {
-							downloadFile(data.url);
+							setTimeout(() => {
+								downloadFile();
+							}, 3000);
 						} else {
 							document.getElementById('cover').style.display =
 								'none';
